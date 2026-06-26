@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>click2cash AI Chatbot</title>
+    <!-- Tailwind CSS for elegant styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for premium look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b1119;
+        }
+        /* Hide scrollbars but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="text-gray-100 flex justify-center items-center h-screen w-full p-0 sm:p-4 overflow-hidden">
+
+    <!-- Main Container representing Mobile App Screen -->
+    <div class="relative w-full h-full max-w-md bg-[#0a0f16] flex flex-col shadow-2xl border-0 sm:border border-gray-800 sm:rounded-3xl overflow-hidden">
+        
+        <!-- TOP NAVIGATION BAR -->
+        <header class="flex items-center justify-between px-5 py-4 border-b border-gray-900 bg-[#0c131d]">
+            <!-- Hamburger Menu (Triggers Sidebar/Menu with secret trigger) -->
+            <button id="hamburger-btn" class="text-gray-300 hover:text-white transition duration-200 text-xl focus:outline-none">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            
+            <!-- Logo & Brand Name -->
+            <div class="flex items-center space-x-2">
+                <div class="w-7 h-7 bg-[#1b5e44] rounded-full flex items-center justify-center">
+                    <span class="text-white text-xs font-bold">$</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-white font-bold text-lg">click2cash</span>
+                    <span class="text-[#39a374] font-bold text-lg ml-1">AI</span>
+                </div>
+            </div>
+
+            <!-- Top Right Chat Plus Icon -->
+            <button id="clear-chat-btn" class="text-gray-300 hover:text-white transition duration-200 text-xl focus:outline-none" title="নতুন চ্যাট শুরু করুন">
+                <i class="fa-regular fa-comment-dots"></i>
+            </button>
+        </header>
+
+        <!-- CHAT AREA -->
+        <main id="chat-box" class="flex-1 overflow-y-auto p-5 space-y-6 no-scrollbar pb-24 bg-[#0a0f16] flex flex-col justify-start">
+            
+            <!-- Welcome Header positioned near top with vibrant Red-Blue Gradient -->
+            <div id="welcome-message" class="text-center pt-8 pb-12 flex flex-col items-center justify-start space-y-2">
+                <h2 class="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 bg-clip-text text-transparent animate-pulse filter drop-shadow-[0_2px_8px_rgba(239,68,68,0.2)]">Welcome</h2>
+                <p class="text-sm font-medium text-gray-400">How can I help you?</p>
+            </div>
+
+        </main>
+
+        <!-- BOTTOM INPUT FORM -->
+        <div class="absolute bottom-0 left-0 right-0 p-4 bg-[#0a0f16] border-t border-gray-900 bg-opacity-95 backdrop-blur-md">
+            <form id="chat-form" class="relative flex items-center bg-[#151f2b] rounded-2xl border border-gray-800 px-4 py-3 shadow-lg">
+                <input 
+                    type="text" 
+                    id="user-input" 
+                    placeholder="Ask Binance Ai..." 
+                    class="w-full bg-transparent text-gray-200 placeholder-gray-500 text-sm focus:outline-none pr-10"
+                    autocomplete="off"
+                    required
+                >
+                <!-- Send Action / Mic Icon -->
+                <button type="submit" id="action-btn" class="absolute right-3 text-gray-400 hover:text-[#39a374] transition duration-200">
+                    <i class="fa-solid fa-microphone text-lg" id="mic-icon"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- HAMBURGER DRAWER MENU -->
+        <div id="menu-drawer" class="hidden fixed inset-0 z-40 flex">
+            <!-- Backdrop layer -->
+            <div id="drawer-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-xs"></div>
+            <!-- Menu container -->
+            <div class="relative flex flex-col w-64 max-w-xs bg-[#0c131d] border-r border-gray-900 h-full p-5 justify-between z-50">
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-widest">মেনু</span>
+                        <button id="close-drawer-btn" class="text-gray-400 hover:text-white transition">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    
+                    <ul class="space-y-3">
+                        <li>
+                            <button onclick="startNewChat()" class="w-full text-left flex items-center space-x-3 text-gray-300 hover:text-white p-2.5 rounded-xl hover:bg-[#151f2b] transition">
+                                <i class="fa-regular fa-comment text-sm text-gray-500"></i> 
+                                <span class="text-sm">নতুন চ্যাট করুন</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button onclick="showToast('শীঘ্রই আসছে!')" class="w-full text-left flex items-center space-x-3 text-gray-300 hover:text-white p-2.5 rounded-xl hover:bg-[#151f2b] transition">
+                                <i class="fa-solid fa-info-circle text-sm text-gray-500"></i> 
+                                <span class="text-sm">হেল্প সেন্টার</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Secret admin trigger disguised as simple Erfan text at the very bottom -->
+                <div class="text-center pb-2">
+                    <button id="secret-erfan-btn" class="text-gray-700 hover:text-gray-500 text-[10px] font-bold tracking-widest uppercase transition py-2 px-6 focus:outline-none">
+                        Erfan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASSWORD MODAL (Admin Authentication) -->
+        <div id="password-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex justify-center items-center p-4">
+            <div class="bg-[#121a24] border border-gray-800 rounded-2xl p-6 w-full max-w-xs text-center shadow-2xl">
+                <h3 class="text-lg font-semibold text-white mb-4">অ্যাডমিন প্রবেশাধিকার</h3>
+                <p class="text-xs text-gray-400 mb-4">পাসওয়ার্ড প্রদান করুন</p>
+                
+                <input 
+                    type="password" 
+                    id="admin-password" 
+                    placeholder="পাসওয়ার্ড লিখুন" 
+                    class="w-full bg-[#1c2936] text-white placeholder-gray-500 text-sm px-4 py-3 rounded-xl border border-gray-700 focus:outline-none focus:border-[#39a374] mb-4 text-center"
+                >
+                <div id="error-msg" class="text-red-500 text-xs hidden mb-3">ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।</div>
+                
+                <div class="flex space-x-3">
+                    <button id="cancel-pass-btn" class="flex-1 py-2 text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition">বাতিল</button>
+                    <button id="submit-pass-btn" class="flex-1 py-2 text-sm bg-[#1b5e44] hover:bg-[#257d5a] text-white font-medium rounded-xl transition">প্রবেশ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN PANEL MODAL -->
+        <div id="admin-modal" class="hidden fixed inset-0 bg-[#0a0f16] z-50 flex flex-col">
+            <!-- Admin Header -->
+            <header class="flex items-center justify-between px-5 py-4 border-b border-gray-900 bg-[#0c131d]">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-user-shield text-[#39a374] text-lg"></i>
+                    <span class="text-white font-bold text-base">click2cash AI অ্যাডমিন প্যানেল</span>
+                </div>
+                <button id="close-admin-btn" class="text-gray-400 hover:text-white transition text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </header>
+
+            <!-- Admin Body Content -->
+            <div class="flex-1 overflow-y-auto p-5 space-y-6">
+                <!-- Custom App Knowledge Base -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-300">অ্যাপ্লিকেশন বিবরণ ও কাস্টম তথ্য (Knowledge Base)</label>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        এখানে আপনার অ্যাপ সম্পর্কিত বিস্তারিত তথ্য লিখুন। ইউজার যখন কোনো প্রশ্ন করবে, এআই আগে এই তথ্যটি পড়ে এখান থেকে উত্তর দেওয়ার চেষ্টা করবে।
+                    </p>
+                    <textarea 
+                        id="knowledge-base" 
+                        rows="12" 
+                        class="w-full bg-[#121a24] text-gray-200 text-sm p-4 rounded-xl border border-gray-800 focus:outline-none focus:border-[#39a374] resize-none leading-relaxed"
+                        placeholder="যেমন: click2cash একটি কৃত্তিম বুদ্ধিমত্তা চালিত আর্নিং প্ল্যাটফর্ম যেখানে ভিডিও দেখে ও গেম খেলে সহজে টাকা ইনকাম করা যায়। টাকা সরাসরি বিকাশ বা রকেটে উইথড্র করা সম্ভব..."
+                    ></textarea>
+                </div>
+
+                <!-- Action Button for Admin -->
+                <div class="pt-2">
+                    <button id="save-knowledge-btn" class="w-full py-3 bg-[#1b5e44] hover:bg-[#257d5a] text-white font-semibold rounded-xl shadow-lg transition duration-200">
+                        <i class="fa-regular fa-circle-check mr-2"></i> তথ্য সংরক্ষণ করুন
+                    </button>
+                </div>
+
+                <!-- Gemini API Key configuration note (Automatic Handling) -->
+                <div class="bg-[#101923] p-4 rounded-xl border border-gray-900 text-xs text-gray-400 space-y-2">
+                    <div class="flex items-center space-x-2 text-[#39a374] font-semibold">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>গুরুত্বপূর্ণ তথ্য</span>
+                    </div>
+                    <p>ব্যাকগ্রাউন্ডে রিয়েল-টাইমে জেমিনি ফ্লাশ এপিআই চমৎকারভাবে কাজ করছে। আপনি এখানে যেকোনো সময় আপনার অ্যাপের নতুন নিয়ম বা আপডেট পেস্ট করে দিন, চ্যাটবট তৎক্ষণাৎ তা শিখে যাবে!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Notification Toast -->
+        <div id="toast" class="absolute top-16 left-1/2 transform -translate-x-1/2 bg-[#1b5e44] text-white text-xs px-4 py-2.5 rounded-full shadow-lg hidden transition-opacity duration-300 z-50">
+            সংরক্ষিত হয়েছে!
+        </div>
+
+    </div>
+
+    <!-- MAIN JAVASCRIPT LOGIC -->
+    <script>
+        const apiKey = ""; 
+        const modelName = "gemini-2.5-flash-preview-09-2025";
+        
+        const systemPromptBase = `You are "click2cash AI", an elite AI assistant trained specifically to help users of the "click2cash" app. 
+Always converse in the user's input language (if Bengali, use clear, friendly, natural Bengali). 
+You are provided with a dedicated app knowledge base from the admin. 
+
+Your supreme rules:
+1. Keep your responses VERY SHORT, brief, and straight to the point. Answer only what is asked. Do not add unnecessary details, intros, or descriptions.
+2. First, check the CUSTOM APP INFORMATION provided below. If the user is asking about the app, features, rules, or system details, answer STRICTLY using that information. 
+3. If the custom information is insufficient or irrelevant to the query, use your own intelligence (Gemini) to give a correct, highly concise, and supportive answer.
+4. If you output any link, format it properly as a standard URL starting with http:// or https://. Do not offer extra or unrequested tips. Keep explanations minimal.`;
+
+        const defaultAppInfo = `click2cash AI একটি চমৎকার আর্নিং প্ল্যাটফর্ম। 
+এখানে কাজ করে টাকা ইনকাম করা অনেক সহজ।
+কাজসমূহ: 
+১. বিভিন্ন ধরনের টাস্ক ও সার্ভে সম্পূর্ণ করা।
+২. এড দেখে বা ছোট ছোট ভিডিও দেখে ইনকাম।
+উইথড্র করার নিয়ম: বিকাশ, নগদ এবং রকেট অ্যাকাউন্টের মাধ্যমে সরাসরি পেমেন্ট নেওয়া যায়। পেমেন্ট প্রসেস হতে সর্বোচ্চ ২৪ ঘণ্টা সময় লাগে।`;
+
+        const chatBox = document.getElementById('chat-box');
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const micIcon = document.getElementById('mic-icon');
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const menuDrawer = document.getElementById('menu-drawer');
+        const drawerBackdrop = document.getElementById('drawer-backdrop');
+        const closeDrawerBtn = document.getElementById('close-drawer-btn');
+        const secretErfanBtn = document.getElementById('secret-erfan-btn');
+        
+        const passwordModal = document.getElementById('password-modal');
+        const cancelPassBtn = document.getElementById('cancel-pass-btn');
+        const submitPassBtn = document.getElementById('submit-pass-btn');
+        const adminPasswordInput = document.getElementById('admin-password');
+        const errorMsg = document.getElementById('error-msg');
+        
+        const adminModal = document.getElementById('admin-modal');
+        const closeAdminBtn = document.getElementById('close-admin-btn');
+        const knowledgeBaseInput = document.getElementById('knowledge-base');
+        const saveKnowledgeBtn = document.getElementById('save-knowledge-btn');
+        const toast = document.getElementById('toast');
+        const clearChatBtn = document.getElementById('clear-chat-btn');
+
+        let appKnowledge = localStorage.getItem('click2cash_knowledge') || defaultAppInfo;
+        knowledgeBaseInput.value = appKnowledge;
+
+        userInput.addEventListener('input', () => {
+            if (userInput.value.trim().length > 0) {
+                micIcon.className = "fa-solid fa-paper-plane text-[#39a374]";
+            } else {
+                micIcon.className = "fa-solid fa-microphone text-lg";
+            }
+        });
+
+        hamburgerBtn.addEventListener('click', () => {
+            menuDrawer.classList.remove('hidden');
+        });
+
+        closeDrawerBtn.addEventListener('click', () => {
+            menuDrawer.classList.add('hidden');
+        });
+        drawerBackdrop.addEventListener('click', () => {
+            menuDrawer.classList.add('hidden');
+        });
+
+        secretErfanBtn.addEventListener('click', () => {
+            menuDrawer.classList.add('hidden'); 
+            adminPasswordInput.value = "";
+            errorMsg.classList.add('hidden');
+            passwordModal.classList.remove('hidden');
+            adminPasswordInput.focus();
+        });
+
+        cancelPassBtn.addEventListener('click', () => {
+            passwordModal.classList.add('hidden');
+        });
+
+        submitPassBtn.addEventListener('click', handlePasswordSubmit);
+        adminPasswordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handlePasswordSubmit();
+        });
+
+        function handlePasswordSubmit() {
+            const pass = adminPasswordInput.value.trim();
+            if (pass === "NiShAt11234") {
+                passwordModal.classList.add('hidden');
+                adminModal.classList.remove('hidden');
+            } else {
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        closeAdminBtn.addEventListener('click', () => {
+            adminModal.classList.add('hidden');
+        });
+
+        saveKnowledgeBtn.addEventListener('click', () => {
+            appKnowledge = knowledgeBaseInput.value;
+            localStorage.setItem('click2cash_knowledge', appKnowledge);
+            showToast("সংরক্ষিত হয়েছে!");
+            adminModal.classList.add('hidden');
+        });
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2500);
+        }
+
+        function startNewChat() {
+            chatBox.innerHTML = `
+                <div id="welcome-message" class="text-center pt-8 pb-12 flex flex-col items-center justify-start space-y-2">
+                    <h2 class="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 bg-clip-text text-transparent animate-pulse filter drop-shadow-[0_2px_8px_rgba(239,68,68,0.2)]">Welcome</h2>
+                    <p class="text-sm font-medium text-gray-400">How can I help you?</p>
+                </div>
+            `;
+            menuDrawer.classList.add('hidden');
+            showToast("চ্যাট রিসেট করা হয়েছে");
+        }
+
+        clearChatBtn.addEventListener('click', startNewChat);
+
+        function speakText(text) {
+            let cleanText = text.replace(/<\/?[^>]+(>|$)/g, "");
+            cleanText = cleanText.replace(/[\*\_#\`~]/g, '');
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.lang = cleanText.match(/[\u0980-\u09FF]/) ? 'bn-BD' : 'en-US';
+                window.speechSynthesis.speak(utterance);
+            } else {
+                showToast("দুঃখিত, টেক্সট-টু-স্পিচ সমর্থিত নয়!");
+            }
+        }
+
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast("কপি সম্পন্ন হয়েছে!");
+            } catch (err) {
+                showToast("কপি করা যায়নি!");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            const welcomeEl = document.getElementById('welcome-message');
+            if (welcomeEl) {
+                welcomeEl.remove();
+            }
+
+            userInput.value = "";
+            micIcon.className = "fa-solid fa-microphone text-lg";
+
+            appendUserMessage(message);
+
+            const messageId = "ai-msg-" + Date.now();
+            const thoughtId = "thought-" + Date.now();
+            appendLoadingBubble(messageId, thoughtId);
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            let seconds = 0;
+            const timerInterval = setInterval(() => {
+                seconds++;
+                const thoughtEl = document.getElementById(thoughtId);
+                if (thoughtEl) {
+                    thoughtEl.innerHTML = `<i class="fa-solid fa-diamond text-xs text-[#39a374] animate-pulse"></i> <span>Thinking...</span>`;
+                }
+            }, 1000);
+
+            const fullSystemInstruction = `${systemPromptBase}\n\n[CUSTOM APP INFORMATION]\n${appKnowledge}`;
+            try {
+                const responseText = await fetchGeminiWithBackoff(message, fullSystemInstruction);
+                clearInterval(timerInterval);
+                populateAIBubble(messageId, thoughtId, responseText, seconds);
+            } catch (error) {
+                clearInterval(timerInterval);
+    
